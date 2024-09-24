@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        img {
+            max-width: 150px; /* Adjust as needed */
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <h2>Admin Panel</h2>
+
+    <h3>Moderator Requests</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{range .Requests}}
+            <tr>
+                <td>{{.ID}}</td>
+                <td>{{.Username}}</td>
+                <td>{{.Status}}</td>
+                <td>
+                    {{if eq .Status "pending"}}
+                        <form action="/approveRequest" method="post" style="display:inline;">
+                            <input type="hidden" name="requestId" value="{{.ID}}">
+                            <button type="submit">Approve</button>
+                        </form>
+                        <form action="/rejectRequest" method="post" style="display:inline;">
+                            <input type="hidden" name="requestId" value="{{.ID}}">
+                            <button type="submit">Reject</button>
+                        </form>
+                    {{else if eq .Status "approved"}}
+                    <form action="/revokeModerator" method="post" style="display:inline;">
+                        <input type="hidden" name="requestId" value="{{.ID}}">
+                        <button type="submit">Revoke Moderator</button>
+                    </form>
+                    {{end}}
+                </td>
+            </tr>
+            {{else}}
+            <tr>
+                <td colspan="4">No requests found.</td>
+            </tr>
+            {{end}}
+        </tbody>
+    </table>
+
+    <h3>Submitted Reports</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Post ID</th>
+                <th>Post Title</th>
+                <th>Moderator</th>
+                <th>Reason</th>
+                <th>Reported At</th>
+                <th>Photo</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{range .Reports}}
+            <tr>
+                <td>{{.ID}}</td>
+                <td>{{.PostID}}</td>
+                <td>{{.PostTitle}}</td>
+                <td>{{.Moderator}}</td>
+                <td>{{.Reason}}</td>
+                <td>{{.ReportedAt}}</td>
+                <td>
+                    {{if .PhotoURL}}
+                        <img src="{{.PhotoURL}}" alt="Post Photo">
+                    {{else}}
+                        No Photo
+                    {{end}}
+                </td>
+            </tr>
+            <tr>
+                <td colspan="7">
+                    <form action="/submitFeedback" method="post">
+                        <input type="hidden" name="reportId" value="{{.ID}}">
+                        <textarea name="feedback" placeholder="Provide your feedback here" required></textarea>
+                        <button type="submit">Submit Feedback</button>
+                    </form>
+                </td>
+            </tr>
+            {{else}}
+            <tr>
+                <td colspan="7">No reports found.</td>
+            </tr>
+            {{end}}
+        </tbody>
+    </table>
+</body>
+</html>

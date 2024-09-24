@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <title>Profil Sayfası</title>
+    <link rel="stylesheet" href="styles/profile.css">
+</head>
+<body>
+    <header>
+        <div class="pages">
+            <img class="logo_image" src="/docs/WG.png" alt="logo">
+            <nav>
+                <a class="page_label" href="/">Ana Sayfa</a>
+                <a class="page_label" href="/create_post">Gönderi Oluştur</a>
+                <a class="page_label" href="/profile">Profil</a>
+                <form action="/logout" method="post" class="logout_form">
+                    <button type="submit">Çıkış Yap</button>
+                </form>
+            </nav>
+        </div>
+    </header>
+    
+    <div class="prof_container">
+        <div class="prof_image_container">
+            <div class="image_frame">
+                <img class="prof_image" src="https://st5.depositphotos.com/1915171/63123/v/450/depositphotos_631235886-stock-illustration-user-profile-icon-vector-avatar.jpg" alt="Profil Resmi">
+            </div>
+        </div>
+        
+        <div class="profil_details">  
+            <p><strong>Kullanıcı Adı:</strong> <span id="username">{{.Username}}</span></p>
+            <p><strong>Email:</strong> <span id="email">{{.Email}}</span></p>
+            <p><strong>Gönderi Sayısı:</strong> <span id="gonderisayisi">{{len .Posts}}</span></p>
+        </div>
+        {{ if .IsAdmin }}
+        <a class="admin_link" href="panel">Admin Paneli Giriş</a>
+        {{else if .IsModerator}}
+        <a class="moderator_link" href="moderatorPanel">Moderator Paneli Giriş</a>
+        {{ end }}
+    </div>
+    
+    <div class="tabs">
+        <button class="tablinks" onclick="openTab(event, 'posts')">Gönderiler</button>
+        <button class="tablinks" onclick="openTab(event, 'likes')">Etkileşimde Bulunulan Gönderiler</button>
+        <button class="tablinks" onclick="openTab(event, 'comments')">Yorumlar</button>
+    </div>
+
+    <div id="posts" class="tabcontent">
+        <h1>Kullanıcı Gönderileri:</h1>
+        <div class="prof_posts">
+            {{ range .Posts }}
+            <div class="post">
+                <br>
+                <h1>{{.CategoryName}}</h1>
+                <h2>{{.Title}}</h2>
+                <p><strong>Gönderi:</strong> {{.Content}}</p>
+                
+                {{ if .Image }}
+                <img src="{{.Image}}" alt="Post Image">
+                {{ end }}
+                <p><strong>Beğeniler:</strong> {{.Likes}}</p>
+                <p><strong>Beğenmeme:</strong> {{.Dislikes}}</p>
+                <p><strong>Oluşturulma Tarihi:</strong> {{.CreatedAt}}</p>
+                <br>
+                <form action="/delete_post?id={{ .ID }}" method="post" onsubmit="return deletePost(this)">
+                    <button type="submit">Gönderiyi Sil</button>
+                </form>
+            </div>
+            {{ end }}
+        </div>
+    </div>
+
+    <div id="likes" class="tabcontent">
+        <h1>Kullanıcının Beğendikleri:</h1>
+        <div class="prof_posts">
+            {{ range .LikedPosts }}
+            <div class="post">
+                <br>
+                <h1>{{.CategoryName}}</h1>
+                <h2>{{.Title}}</h2>
+                <p><strong>Gönderi:</strong> {{.Content}}</p>
+                
+                {{ if .Image }}
+                <img src="{{.Image}}" alt="Post Image">
+                {{ end }}
+                <p><strong>Beğeniler:</strong> {{.Likes}}</p>
+                <p><strong>Beğenmeme:</strong> {{.Dislikes}}</p>
+                <p><strong>Oluşturulma Tarihi:</strong> {{.CreatedAt}}</p>
+                
+            </div>
+            {{ end }}
+        </div>
+        <h1>Kullanıcının Beğenmedikleri:</h1>
+        <div class="prof_posts">
+            {{ range .DislikedPosts }}
+            <div class="post">
+                <br>
+                <h1>{{.CategoryName}}</h1>
+                <h2>{{.Title}}</h2>
+                <p><strong>Gönderi:</strong> {{.Content}}</p>
+                
+                {{ if .Image }}
+                <img src="{{.Image}}" alt="Post Image">
+                {{ end }}
+                <p><strong>Beğeniler:</strong> {{.Likes}}</p>
+                <p><strong>Beğenmeme:</strong> {{.Dislikes}}</p>
+                <p><strong>Oluşturulma Tarihi:</strong> {{.CreatedAt}}</p>
+                <br>
+            </div>
+            {{ end }}
+        </div>
+    </div>
+
+    <div id="comments" class="tabcontent">
+        <h1>Kullanıcının Yorumları:</h1>
+        <div class="prof_comments">
+            {{ range .Comments }}
+            <div class="comment">
+                <br>
+                <h2>Gönderi ID: {{.PostID}}</h2>
+                <p><strong>Yorum:</strong> {{.Content}}</p>
+                <p><strong>Oluşturulma Tarihi:</strong> {{.CreatedAt}}</p>
+                <br>
+            </div>
+            {{ end }}
+        </div>
+    </div>
+    <script>
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+        document.getElementsByClassName('tablinks')[0].click();  // İlk sekmenin açık olarak başlaması
+
+        function deletePost(form) {
+        if (confirm("Bu gönderiyi silmek istediğinizden emin misiniz?")) {
+            fetch(form.action, {
+                method: 'POST',
+            }).then(response => {
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert("Gönderi silinemedi.");
+                }
+            }).catch(error => {
+                console.error('Error deleting post:', error);
+                alert("Bir hata oluştu. Gönderi silinemedi.");
+            });
+        }
+        return false; // Formun default davranışını engelle (sayfayı yenileme)
+    }
+    </script>
+</body>
+</html>

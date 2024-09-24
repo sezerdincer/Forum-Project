@@ -1,0 +1,198 @@
+/* Genel Stiller */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: "Poppins", Helvetica, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+}
+
+.header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+    height: 120px;
+    width: 250px;
+    padding-left: 100px;
+}
+
+.nav {
+    display: flex;
+    gap: 20px;
+}
+
+.nav-item {
+    padding: 10px 20px;
+    border-radius: 20px;
+    background-color: #40adb4;
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 20px;
+    text-align: center;
+}
+
+.current-item {
+    padding: 10px 20px;
+    border-radius: 20px;
+    background-color: #0709a3;
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 20px;
+    text-align: center;
+}
+
+.desktop-screen {
+    background-color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    flex: 1;
+    padding: 20px;
+}
+
+.form-container {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px;
+    text-align: center;
+}
+
+.register-form h2 {
+    margin-bottom: 20px;
+}
+
+.input-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 16px;
+}
+.input-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #40adb4;
+}
+
+.input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-with-icon input {
+    width: 100%;
+    padding: 10px 10px 10px 40px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #40adb4;
+    color: white;
+}
+
+.input-icon {
+    position: absolute;
+    left: 10px; /* İkonun sağa hizalanması için */
+    width: 20px;
+    height: 20px;
+    pointer-events: none;
+}
+
+
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: black;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #358f90;
+}
+
+.social-login {
+    margin: 20px 0;
+}
+
+.social-icons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.social-icons img {
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+}
+
+.login-redirect {
+    font-size: 16px;
+}
+
+.login-redirect a {
+    color: #40adb4;
+    text-decoration: none;
+}
+
+/* Responsive Tasarım */
+@media (max-width: 600px) {
+    .nav {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .nav-item {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .form-container {
+        padding: 10px;
+    }
+
+    .register-form h2 {
+        font-size: 24px;
+    }
+
+    .input-group label,
+    .input-group input {
+        font-size: 14px;
+    }
+
+    button {
+        font-size: 14px;
+    }
+
+    .login-redirect {
+        font-size: 14px;
+    }
+}

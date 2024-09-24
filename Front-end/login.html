@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles/globals.css">
+    <link rel="stylesheet" href="styles/style.css">
+    <title>Login</title>
+</head>
+<body>
+    <header class="header">
+        <img src="img/logo.png" alt="Logo" class="logo">
+        <nav class="nav">
+            <a href="home" class="nav-item">HOME</a>
+            <a href="register" class="nav-item">REGISTER</a>
+            <a href="login" class="current-item">LOGIN</a>
+        </nav>
+    </header>
+    <div class="desktop-screen">
+        <div class="form-container">
+            <form action="/loginSubmit" method="post" class="login-form"> 
+                <h2>Login</h2>
+                <div class="input-group">
+                    <label for="username">Username or Email</label>
+                    <div class="input-with-icon">
+                        <img class="input-icon" src="img/mdi-account.svg" alt="Username Icon" />
+                    <input type="text" id="username" name="username" placeholder="Username or E-mail" required />
+                </div>
+                </div>
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <div class="input-with-icon">
+                        <img class="input-icon" src="img/image-1.png" alt="Pass1 Icon" />
+                    <input type="password" id="password" name="password" placeholder="Password" required />
+                </div>
+            </div>
+                <button type="submit">Login</button>
+            </form>
+            <div style="margin-top: 20px;"></div>
+            <div class="social-login">
+                <p>or Login with</p>
+                <div class="social-icons">
+                    <a href="/auth/github/login"><img src="img/github.png" alt="GitHub" /></a>
+                    <a href="/auth/google/login"><img src="img/google.png" alt="Google" /></a>
+                    <a href="/auth/facebook/login"><img src="img/facebook.png" alt="facebook" /></a>
+                </div>
+            </div>
+            <div class="login-redirect">
+                <p>Don't have an account? <a href="register">Register now</a></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

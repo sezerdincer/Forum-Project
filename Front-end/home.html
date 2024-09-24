@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <title>Ana Sayfa</title>
+    <link rel="stylesheet" href="../styles/home.css">
+    <link href="https://fonts.cdnfonts.com/css/montreal?styles=28831" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="pages">
+            <img class="logo_image" src="../docs/WG.png" alt="logo">
+            <a class="page_label" href="/">Walk Global</a>
+            <a class="page_label" href="/create_post">Gönderi Oluştur</a>
+            
+            {{if .ShowLoginRegister}}
+            <a class="page_label" href="/login">Login</a>
+            <a class="page_label" href="/register">Register</a>
+            {{else}}
+            <a class="page_label" href="/profile">Profil</a>
+            <form action="/logout" method="post" class="logout_form">
+                <button type="submit">Çıkış Yap</button>
+            </form>
+            
+            {{end}}
+        </div>
+    </header>
+    <main>
+        <div class="posts">
+            {{ range .Posts }}
+            <div class="post" data-post-id="{{.ID}}">
+                <h1>{{.CategoryName}}</h1>
+                <h2>{{.Title}}</h2>
+                <p><strong>Gönderi:</strong> {{.Content}}</p>
+                <p><strong>Oluşturan Hesap:</strong> {{.Username}}</p>
+                {{ if .Image }}
+                    <img src="{{.Image}}" alt="Post Image">
+                {{ end }}
+                <p><strong>Beğeniler:</strong> {{.Likes}}</p>
+                <p><strong>Beğenmeme:</strong> {{.Dislikes}}</p>
+                <p><strong>Oluşturulma Tarihi:</strong> {{.CreatedAt}}</p>
+
+                <div class="comments-container">
+                    <p>YORUMLAR:{{len .Comments}}</p>
+                    <button class="toggle-comments">Göster/Gizle</button>
+                    <div class="comments" style="display: none;"> 
+                        {{ range .Comments }}
+                            <div class="comment" data-comment-id="{{.ID}}">
+                                <p><em>Kullanıcı : {{ .Username }}</em></p>
+                                <p>Yorum : {{ .Content }}</p>
+                                <p>Oluşturma Tarihi : {{ .CreatedAt }}</p>
+                                <p><strong>Beğeniler:</strong> {{.Likes}}</p>
+                                <p><strong>Beğenmeme:</strong> {{.Dislikes}}</p>
+                                {{ if $.LoggedIn }}
+                                <div class="comment-like-dislike-buttons">
+                                    <form method="post" action="/like_comment" style="display:inline;">
+                                        <input type="hidden" name="commentId" value="{{.ID}}">
+                                        <button type="submit" class="like-button"><i class="fas fa-thumbs-up"></i></button>
+                                    </form>
+                                    <form method="post" action="/dislike_comment" style="display:inline;">
+                                        <input type="hidden" name="commentId" value="{{.ID}}">
+                                        <button type="submit" class="dislike-button"><i class="fas fa-thumbs-down"></i></button>
+                                    </form>
+                                </div>
+                                {{end}}
+                            </div>
+                        {{ end }}
+                    </div>
+                </div>
+                <br>
+                {{ if $.LoggedIn }}
+                <div class="like-dislike-buttons">
+                    <form method="post" action="/like" style="display:inline;">
+                        <input type="hidden" name="postId" value="{{.ID}}">
+                        <button type="submit" class="like-button"><i class="fas fa-thumbs-up"></i></button>
+                    </form>
+                    <form method="post" action="/dislike" style="display:inline;">
+                        <input type="hidden" name="postId" value="{{.ID}}">
+                        <button type="submit" class="dislike-button"><i class="fas fa-thumbs-down"></i></button>
+                    </form>
+                </div>
+                <form class="comment_form" method="post" data-post-id="{{.ID}}">
+                    <input type="hidden" name="postId" value="{{.ID}}">
+                    <textarea name="comment" placeholder="Yorumunuzu buraya girin..." required></textarea>
+                    <button type="submit" class="submit-comment">Yorum Yap</button>
+                </form>
+                {{else}}
+                <div class="alert">Beğeni ya da yorum için <a href="/login">giriş yapın</a></div>
+                {{ end }}
+                <br>
+            </div>
+            {{ end }}  
+        </div>
+        <div class="categories">
+            <h1>Kategoriler</h1>
+            {{range .Categories}}
+            <a class="category" href="{{.Link}}">#{{.Name}}</a>
+            {{end}}
+        </div>
+    </main>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Toggle comments visibility
+            function toggleComments(event) {
+                const commentsContainer = event.target.parentElement.querySelector(".comments");
+                commentsContainer.style.display = commentsContainer.style.display === "none" ? "block" : "none";
+            }
+
+            // Handle clicking on post to view post detail or toggle comments
+            document.querySelector(".posts").addEventListener("click", function (event) {
+                const target = event.target;
+                if (target.classList.contains("toggle-comments")) {
+                    toggleComments(event);
+                } else if (target.closest(".post")) {
+                    const postId = target.closest(".post").getAttribute("data-post-id");
+                    // Prevent navigation if clicking within the post area but not on specific buttons
+                    if (!target.matches(".submit-comment, .comment_form, textarea")) {
+                        window.location.href = `/view_post?id=${postId}`;
+                    }
+                }
+            });
+
+            // Handle comment submission
+            document.querySelectorAll(".comment_form").forEach(form => {
+                form.addEventListener("submit", function (e) {
+                    e.preventDefault();
+                    const postId = this.dataset.postId;
+                    const formData = new FormData(this);
+
+                    fetch("/comment", {
+                        method: "POST",
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.message === "Comment posted successfully") {
+                            const commentsContainer = this.parentElement.querySelector(".comments");
+                            const newComment = document.createElement("div");
+                            newComment.classList.add("comment");
+                            newComment.innerHTML = `
+                                <p><em>YourUsername</em></p>
+                                <p>${formData.get("comment")}</p>
+                                <p>Just now</p>`;
+                            commentsContainer.appendChild(newComment);
+                            this.reset();
+                        } else {
+                            alert("Failed to post comment");
+                        }
+                    })
+                    .catch(error => console.error("Error:", error));
+                });
+
+                // Prevent propagation from textarea click
+                form.querySelector("textarea").addEventListener("click", function (e) {
+                    e.stopPropagation(); // Stop event from propagating to .posts
+                });
+                
+            });
+            document.querySelectorAll('.category').forEach(category => {
+                category.addEventListener('click', function(event) {
+                    event.preventDefault(); // Bağlantıya tıklamayı önler
+
+                    const categoryName = this.textContent.slice(1); // Kategori adını al, # işaretini kaldır
+                    const posts = document.querySelectorAll('.post');
+
+                    posts.forEach(post => {
+                        const title = post.querySelector('h1').textContent;
+                        const displayStyle = title.includes(categoryName) ? 'block' : 'none';
+                        post.style.display = displayStyle;
+                    });
+                });
+            });
+
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moderator Panel</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .actions button {
+            margin-right: 5px;
+        }
+        img {
+            max-width: 200px;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <h2>Moderator Panel</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Content</th>
+                <th>Image</th>
+                <th>Created At</th>
+                <th>Feedback</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{range .Posts}}
+            <tr>
+                <td>{{.ID}}</td>
+                <td>{{.Title}}</td>
+                <td>{{.Content}}</td>
+                <td>
+                    {{if .Image}}
+                        <img src="{{.Image}}" alt="Post Image">
+                    {{else}}
+                        No Image
+                    {{end}}
+                </td>
+                <td>{{.CreatedAt}}</td>
+                <td>{{if .Feedback.Valid}}{{.Feedback.String}}{{else}}No Feedback{{end}}</td>
+                <td class="actions">
+                    <form action="/deletePost" method="post" style="display:inline;">
+                        <input type="hidden" name="postId" value="{{.ID}}">
+                        <button type="submit">Delete</button>
+                    </form>
+                    <form action="/reportPost" method="post" style="display:inline;">
+                        <input type="hidden" name="postId" value="{{.ID}}">
+                        <input type="text" name="reason" placeholder="Reason for reporting" required>
+                        <button type="submit">Report</button>
+                    </form>
+                </td>
+            </tr>
+            {{else}}
+            <tr>
+                <td colspan="7">No posts found.</td>
+            </tr>
+            {{end}}
+        </tbody>
+        
+    </table>
+</body>
+</html>
